@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="BUILD//LAB is an AI-powered PC-building assistant that helps users design custom gaming and workstation builds with compatibility guidance, hardware comparisons, and upgrade planning."
+    />
+    <title>BUILD//LAB | AI-Powered Custom PC Architecture</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #080b0a;
+        --bg-soft: #101513;
+        --panel: rgba(18, 23, 21, 0.9);
+        --panel-strong: #121715;
+        --panel-alt: rgba(14, 18, 16, 0.9);
+        --line: rgba(181, 255, 57, 0.2);
+        --line-strong: rgba(101, 221, 224, 0.35);
+        --text: #f1f5f2;
+        --muted: #91a099;
+        --accent: #b5ff39;
+        --accent-soft: rgba(181, 255, 57, 0.14);
+        --cyan: #65dde0;
+        --cyan-soft: rgba(101, 221, 224, 0.14);
+        --shadow: 0 30px 70px rgba(3, 8, 7, 0.65);
+        --radius: 24px;
+        --container: min(1180px, calc(100vw - 40px));
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background:
+          linear-gradient(180deg, rgba(11, 15, 13, 0.92), rgba(8, 11, 10, 1)),
+          radial-gradient(circle at top left, rgba(181, 255, 57, 0.08), transparent 35%),
+          radial-gradient(circle at bottom right, rgba(101, 221, 224, 0.09), transparent 38%),
+          var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 36px 36px;
+        mask-image: radial-gradient(circle at center, black 0%, rgba(0, 0, 0, 0.9) 30%, transparent 100%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      .screen-reader {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .container {
+        width: var(--container);
+        margin: 0 auto;
+      }
+
+      .eyebrow,
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: "Space Grotesk", sans-serif;
+        letter-spacing: -0.06em;
+        margin: 0 0 1rem;
+        color: var(--text);
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(16px);
+        background: rgba(8, 11, 10, 0.72);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 88px;
+        gap: 20px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: -0.06em;
+      }
+
+      .brand-mark {
+        width: 20px;
+        height: 20px;
+        position: relative;
+        border: 1px solid rgba(181, 255, 57, 0.75);
+        background: rgba(181, 255, 57, 0.06);
+        box-shadow: inset 0 0 18px rgba(181, 255, 57, 0.15), 0 0 14px rgba(181, 255, 57, 0.18);
+      }
+
+      .brand-mark::before,
+      .brand-mark::after {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        border: 1px solid rgba(101, 221, 224, 0.55);
+      }
+
+      .brand-mark::after {
+        inset: 9px;
+        background: rgba(181, 255, 57, 0.18);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 2.2rem;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .nav-links a {
+        transition: color 0.2s ease;
+      }
+
+      .nav-links a:hover,
+      .nav-links a:focus-visible {
+        color: var(--text);
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .nav-cta,
+      .button,
+      .ghost-button,
+      .prompt-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        cursor: pointer;
+      }
+
+      .nav-cta,
+      .button {
+        background: linear-gradient(135deg, rgba(181, 255, 57, 1), rgba(141, 224, 42, 1));
+        border: 1px solid rgba(181, 255, 57, 0.7);
+        color: #10170e;
+        box-shadow: 0 0 22px rgba(181, 255, 57, 0.18);
+        padding: 0.9rem 1.5rem;
+        min-height: 46px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.76rem;
+      }
+
+      .button {
+        min-width: 190px;
+      }
+
+      .ghost-button {
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--text);
+        padding: 0.95rem 1.5rem;
+        min-height: 46px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 0.76rem;
+      }
+
+      .nav-cta:hover,
+      .button:hover,
+      .ghost-button:hover,
+      .prompt-chip:hover,
+      .nav-cta:focus-visible,
+      .button:focus-visible,
+      .ghost-button:focus-visible,
+      .prompt-chip:focus-visible {
+        transform: translateY(-2px);
+      }
+
+      .nav-toggle {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        gap: 5px;
+        width: 46px;
+        height: 46px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+      }
+
+      .nav-toggle span {
+        display: block;
+        width: 19px;
+        height: 2px;
+        background: var(--text);
+        margin: 0 auto;
+        transition: transform 0.2s ease;
+      }
+
+      .nav-toggle[aria-expanded="true"] span:nth-child(1) {
+        transform: rotate(45deg) translate(4px, 5px);
+      }
+
+      .nav-toggle[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .nav-toggle[aria-expanded="true"] span:nth-child(3) {
+        transform: rotate(-45deg) translate(4px, -5px);
+      }
+
+      section {
+        position: relative;
+        z-index: 1;
+        scroll-margin-top: 110px;
+      }
+
+      .hero {
+        padding: 5.5rem 0 2rem;
+      }
+
+      .hero-shell {
+        display: grid;
+        grid-template-columns: 1.06fr 0.94fr;
+        gap: 2.5rem;
+        align-items: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        color: var(--accent);
+        font-size: 0.72rem;
+        margin-bottom: 1.2rem;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 40px;
+        height: 1px;
+        background: rgba(181, 255, 57, 0.6);
+      }
+
+      h1 {
+        font-size: clamp(3.6rem, 7vw, 7rem);
+        line-height: 0.93;
+        letter-spacing: -0.07em;
+        margin-bottom: 1.25rem;
+      }
+
+      .highlight {
+        color: var(--accent);
+      }
+
+      .hero-copy p {
+        max-width: 630px;
+        font-size: 1.08rem;
+        line-height: 1.75;
+        color: var(--muted);
+      }
+
+      .cta-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2.1rem;
+        flex-wrap: wrap;
+      }
+
+      .trust-line {
+        margin-top: 1.4rem;
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+        color: rgba(241, 245, 242, 0.84);
+      }
+
+      .trust-line strong {
+        color: var(--accent);
+      }
+
+      .pc-visual {
+        position: relative;
+        min-height: 640px;
+        display: grid;
+        place-items: center;
+        padding: 2.2rem 1rem 1.5rem;
+      }
+
+      .pc-shell {
+        position: relative;
+        width: min(100%, 560px);
+        height: 520px;
+        border-radius: 42px;
+        background: linear-gradient(180deg, rgba(19, 25, 22, 0.8), rgba(12, 15, 14, 0.96));
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .pc-shell::before {
+        content: "";
+        position: absolute;
+        inset: 14px 16px auto 16px;
+        height: 18px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, rgba(181, 255, 57, 0.18), rgba(101, 221, 224, 0.18));
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .pc-body {
+        position: absolute;
+        inset: 80px 50px 110px 50px;
+        border-radius: 32px 32px 38px 38px;
+        background: linear-gradient(180deg, rgba(20, 25, 23, 0.96), rgba(13, 17, 15, 0.96));
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 0 26px rgba(157, 206, 223, 0.07);
+      }
+
+      .pc-body::before {
+        content: "";
+        position: absolute;
+        inset: 12px 18px 12px 18px;
+        border-radius: 24px;
+        background: linear-gradient(180deg, rgba(12, 17, 14, 0.8), rgba(9, 12, 11, 0.8));
+        border: 1px solid rgba(101, 221, 224, 0.14);
+      }
+
+      .gpu {
+        position: absolute;
+        left: 50%;
+        top: 116px;
+        width: 280px;
+        height: 180px;
+        transform: translateX(-50%);
+        border-radius: 18px 18px 22px 22px;
+        background: linear-gradient(180deg, rgba(14, 19, 20, 1), rgba(11, 15, 17, 1));
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 0 18px rgba(101, 221, 224, 0.12), 0 0 30px rgba(101, 221, 224, 0.08);
+      }
+
+      .gpu::before,
+      .gpu::after {
+        content: "";
+        position: absolute;
+        inset: 18px 22px 20px 22px;
+        border-radius: 12px;
+        border: 1px solid rgba(181, 255, 57, 0.22);
+        background: linear-gradient(180deg, rgba(181, 255, 57, 0.04), rgba(18, 27, 24, 0.18));
+      }
+
+      .gpu::after {
+        inset: auto 20px 18px 20px;
+        height: 12px;
+        background: linear-gradient(90deg, rgba(181, 255, 57, 0.18), rgba(101, 221, 224, 0.18));
+      }
+
+      .fan-row {
+        position: absolute;
+        left: 78px;
+        right: 78px;
+        bottom: 100px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .fan {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(28, 33, 31, 1), rgba(11, 15, 13, 1) 60%, rgba(8, 10, 9, 1));
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        position: relative;
+        box-shadow: inset 0 0 18px rgba(181, 255, 57, 0.08);
+      }
+
+      .fan::before {
+        content: "";
+        position: absolute;
+        inset: 20px;
+        border-radius: 50%;
+        border: 2px solid rgba(181, 255, 57, 0.35);
+        box-shadow: 0 0 18px rgba(181, 255, 57, 0.12);
+      }
+
+      .fan::after {
+        content: "";
+        position: absolute;
+        inset: 13px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, transparent 25%, rgba(181, 255, 57, 0.25) 27%, transparent 35%, transparent 60%, rgba(181, 255, 57, 0.2) 62%, transparent 72%, transparent 100%);
+      }
+
+      .motherboard {
+        position: absolute;
+        left: 50%;
+        bottom: 112px;
+        width: 300px;
+        height: 150px;
+        transform: translateX(-50%);
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(20, 24, 24, 1), rgba(15, 17, 17, 1));
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .motherboard::before,
+      .motherboard::after {
+        content: "";
+        position: absolute;
+        inset: 20px 24px 22px 24px;
+        border-radius: 12px;
+        border: 1px solid rgba(101, 221, 224, 0.2);
+      }
+
+      .motherboard::after {
+        inset: 40px 40px 30px 40px;
+        background: rgba(181, 255, 57, 0.05);
+        border-color: rgba(181, 255, 57, 0.2);
+      }
+
+      .ram-slot {
+        position: absolute;
+        left: 50%;
+        bottom: 90px;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+      }
+
+      .ram-slot span {
+        width: 48px;
+        height: 12px;
+        border-radius: 999px;
+        display: block;
+        background: linear-gradient(90deg, rgba(181, 255, 57, 0.9), rgba(101, 221, 224, 0.7));
+        box-shadow: 0 0 18px rgba(181, 255, 57, 0.17);
+      }
+
+      .pc-label {
+        position: absolute;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0.5rem 0.8rem;
+        border-radius: 999px;
+        background: rgba(11, 15, 13, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text);
+        white-space: nowrap;
+      }
+
+      .label-gpu { top: 88px; left: 90px; }
+      .label-cooling { bottom: 170px; right: 68px; }
+      .label-airflow { bottom: 54px; left: 64px; }
+      .label-memory { bottom: 58px; right: 74px; }
+
+      .scan-line {
+        position: absolute;
+        left: 18px;
+        right: 18px;
+        top: 45%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(181, 255, 57, 0.9), transparent);
+        box-shadow: 0 0 22px rgba(181, 255, 57, 0.6);
+        animation: sweep 5s linear infinite;
+      }
+
+      @keyframes sweep {
+        0% { transform: translateY(-180px); opacity: 0; }
+        15% { opacity: 1; }
+        50% { transform: translateY(210px); }
+        100% { transform: translateY(210px); opacity: 0; }
+      }
+
+      .section-heading {
+        margin-bottom: 2.1rem;
+      }
+
+      .section-heading h2 {
+        font-size: clamp(2.2rem, 4vw, 4rem);
+        line-height: 1.05;
+      }
+
+      .section-heading p {
+        max-width: 720px;
+        font-size: 1.04rem;
+      }
+
+      .capabilities {
+        padding: 4.5rem 0 1rem;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1.2rem;
+      }
+
+      .feature-card {
+        position: relative;
+        background: linear-gradient(180deg, rgba(18, 23, 21, 0.92), rgba(12, 15, 14, 0.94));
+        border: 1px solid rgba(255, 255, 255, 0.075);
+        border-radius: 22px;
+        padding: 1.3rem 1.25rem 1.5rem;
+        overflow: hidden;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(181, 255, 57, 0), rgba(181, 255, 57, 0.7), rgba(101, 221, 224, 0), rgba(181, 255, 57, 0));
+      }
+
+      .feature-card:hover,
+      .feature-card:focus-within {
+        transform: translateY(-4px);
+        border-color: rgba(181, 255, 57, 0.4);
+        box-shadow: 0 20px 35px rgba(3, 8, 7, 0.34);
+      }
+
+      .feature-index {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.4rem;
+        color: var(--muted);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.66rem;
+        letter-spacing: 0.12em;
+      }
+
+      .feature-icon {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        border-radius: 14px;
+        margin-bottom: 1rem;
+        border: 1px solid rgba(101, 221, 224, 0.2);
+        color: var(--accent);
+        background: radial-gradient(circle at center, rgba(181, 255, 57, 0.12), rgba(101, 221, 224, 0.05));
+      }
+
+      .feature-icon svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .feature-card h3 {
+        font-size: 1.4rem;
+        margin-bottom: 0.7rem;
+      }
+
+      .feature-card p {
+        font-size: 0.98rem;
+      }
+
+      .workflow {
+        padding: 4.8rem 0 1.2rem;
+      }
+
+      .workflow-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        position: relative;
+        gap: 1rem;
+      }
+
+      .workflow-grid::before {
+        content: "";
+        position: absolute;
+        left: 12%;
+        right: 12%;
+        top: 2rem;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(181, 255, 57, 0), rgba(181, 255, 57, 0.32), rgba(101, 221, 224, 0.32), rgba(101, 221, 224, 0));
+      }
+
+      .step {
+        position: relative;
+        background: rgba(18, 23, 21, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 22px;
+        padding: 2.15rem 1.5rem 1.5rem;
+      }
+
+      .step-index {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: rgba(181, 255, 57, 0.08);
+        border: 1px solid rgba(181, 255, 57, 0.26);
+        color: var(--accent);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        letter-spacing: 0.12em;
+        margin-bottom: 1.2rem;
+      }
+
+      .step h3 {
+        font-size: 1.4rem;
+        margin-bottom: 0.65rem;
+      }
+
+      .step p {
+        font-size: 0.97rem;
+      }
+
+      .architect {
+        padding: 4.8rem 0 2rem;
+      }
+
+      .architect-wrap {
+        display: grid;
+        grid-template-columns: 0.8fr 1.2fr;
+        gap: 1.4rem;
+        align-items: stretch;
+      }
+
+      .architect-panel,
+      .chat-panel {
+        background: linear-gradient(180deg, rgba(18, 23, 21, 0.96), rgba(11, 15, 13, 0.96));
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: var(--shadow);
+      }
+
+      .architect-panel {
+        padding: 1.5rem;
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 1rem;
+      }
+
+      .panel-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.45rem 0.7rem;
+        border-radius: 999px;
+        background: rgba(181, 255, 57, 0.08);
+        color: var(--accent);
+        border: 1px solid rgba(181, 255, 57, 0.22);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .panel-badge::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 12px rgba(181, 255, 57, 0.6);
+      }
+
+      .architect-panel h3 {
+        font-size: clamp(1.8rem, 2.4vw, 2.5rem);
+        margin-bottom: 0.75rem;
+      }
+
+      .architect-panel > p {
+        font-size: 0.98rem;
+        max-width: 48ch;
+      }
+
+      .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 1.45rem 0 1.7rem;
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .feature-list li {
+        position: relative;
+        padding-left: 1.5rem;
+        color: var(--muted);
+        font-size: 0.98rem;
+      }
+
+      .feature-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.55rem;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--accent), var(--cyan));
+        box-shadow: 0 0 18px rgba(181, 255, 57, 0.26);
+      }
+
+      .catalog {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+      }
+
+      .catalog-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 0.8rem 0.9rem;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(10, 14, 12, 0.55);
+      }
+
+      .catalog-item span {
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .catalog-item strong {
+        color: var(--accent);
+        font-size: 0.76rem;
+        letter-spacing: 0.08em;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .prompt-list {
+        display: grid;
+        gap: 0.8rem;
+        margin-top: 1.4rem;
+      }
+
+      .prompt-chip {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 0.6rem;
+        padding: 0.9rem 1rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        font-weight: 600;
+        text-align: left;
+      }
+
+      .prompt-chip .mini-tag {
+        font-size: 0.64rem;
+        letter-spacing: 0.12em;
+        color: var(--accent);
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+      }
+
+      .chat-panel {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .chat-frame {
+        min-height: 600px;
+        background: linear-gradient(180deg, rgba(9, 12, 11, 0.96), rgba(14, 18, 16, 0.98));
+        border-radius: 28px;
+        overflow: hidden;
+      }
+
+      .chat-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 1rem 1.1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(18, 23, 21, 0.9);
+      }
+
+      .chat-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.62rem;
+        color: var(--text);
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .chat-status::before {
+        content: "";
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--cyan);
+        box-shadow: 0 0 12px rgba(101, 221, 224, 0.7);
+      }
+
+      .chat-badges {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .dot:nth-child(1) { background: #ff5f57; }
+      .dot:nth-child(2) { background: #ffbd2e; }
+      .dot:nth-child(3) { background: #28c840; }
+
+      #bp-embedded-webchat {
+        width: 100%;
+        height: 650px;
+        min-height: 650px;
+        max-height: 650px;
+        position: relative;
+        background:
+          linear-gradient(180deg, rgba(19, 24, 22, 1), rgba(8, 12, 10, 1)),
+          linear-gradient(90deg, rgba(181, 255, 57, 0.04), rgba(101, 221, 224, 0.04));
+        overflow: hidden;
+        border-radius: 0 0 28px 28px;
+      }
+
+      #bp-embedded-webchat iframe,
+      #bp-embedded-webchat > iframe {
+        width: 100% !important;
+        height: 100% !important;
+        border: 0;
+        display: block;
+      }
+
+      .copy-status {
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+        color: var(--accent);
+        min-height: 1.2rem;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .knowledge {
+        padding: 4rem 0 2rem;
+      }
+
+      .knowledge-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .hardware-item {
+        position: relative;
+        background: linear-gradient(180deg, rgba(18, 23, 21, 0.92), rgba(12, 15, 14, 0.9));
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 18px;
+        padding: 1.3rem 1.1rem;
+      }
+
+      .hardware-item::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 86%;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(181, 255, 57, 0.7), rgba(101, 221, 224, 0));
+      }
+
+      .hardware-item .mono {
+        font-size: 0.64rem;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        display: block;
+        margin-bottom: 0.8rem;
+      }
+
+      .hardware-item h4 {
+        font-size: 1.2rem;
+        margin-bottom: 0.2rem;
+      }
+
+      .hardware-item p {
+        font-size: 0.92rem;
+      }
+
+      .knowledge-disclaimer {
+        margin-top: 1.2rem;
+        color: rgba(241, 245, 242, 0.8);
+        font-size: 0.92rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+        padding-top: 1rem;
+      }
+
+      .cta-band {
+        padding: 3.8rem 0 1.4rem;
+      }
+
+      .cta-shell {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.2rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 30px;
+        padding: clamp(1.5rem, 3vw, 2.4rem);
+        background: linear-gradient(135deg, rgba(17, 22, 20, 0.94), rgba(15, 18, 17, 0.92));
+        box-shadow: var(--shadow);
+      }
+
+      .cta-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0 auto auto 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(181, 255, 57, 0), rgba(181, 255, 57, 0.6), rgba(101, 221, 224, 0));
+      }
+
+      .cta-shell h2 {
+        font-size: clamp(2.2rem, 4vw, 4rem);
+        line-height: 1.04;
+      }
+
+      .cta-shell p {
+        margin-top: 0.5rem;
+        font-size: 1.02rem;
+      }
+
+      .site-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(8, 11, 10, 0.9);
+        padding: 2rem 0 3rem;
+      }
+
+      .footer-shell {
+        display: grid;
+        grid-template-columns: 1.3fr 0.8fr 0.8fr;
+        gap: 2rem;
+        align-items: start;
+      }
+
+      .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 0.8rem;
+      }
+
+      .footer-brand .brand-mark {
+        width: 18px;
+        height: 18px;
+      }
+
+      .footer-shell h4 {
+        font-size: 0.82rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.8rem;
+      }
+
+      .footer-shell a,
+      .footer-shell p {
+        color: var(--muted);
+        font-size: 0.96rem;
+      }
+
+      .footer-links {
+        display: grid;
+        gap: 0.55rem;
+      }
+
+      .note {
+        margin-top: 1rem;
+        font-size: 0.92rem;
+      }
+
+      @media (max-width: 980px) {
+        .hero-shell,
+        .architect-wrap,
+        .footer-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .feature-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .knowledge-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .cta-shell {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .nav {
+          position: relative;
+          min-height: 76px;
+        }
+
+        .nav-toggle {
+          display: inline-flex;
+        }
+
+        .nav-links,
+        .nav-actions {
+          display: none;
+        }
+
+        .nav-open .nav-links,
+        .nav-open .nav-actions {
+          display: flex;
+        }
+
+        .nav-open {
+          flex-wrap: wrap;
+          padding: 0.8rem 0 1rem;
+        }
+
+        .nav-open .nav-links {
+          width: 100%;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.8rem;
+          font-size: 0.95rem;
+          padding-top: 0.8rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-open .nav-actions {
+          width: 100%;
+          justify-content: flex-start;
+        }
+
+        .feature-grid,
+        .workflow-grid,
+        .knowledge-grid,
+        .catalog {
+          grid-template-columns: 1fr;
+        }
+
+        .workflow-grid::before {
+          display: none;
+        }
+
+        .hero {
+          padding-top: 4rem;
+        }
+
+        .pc-visual {
+          min-height: 480px;
+        }
+
+        .pc-shell {
+          transform: scale(0.9);
+        }
+      }
+
+      @media (max-width: 420px) {
+        h1 {
+          line-height: 0.96;
+        }
+
+        .cta-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .button,
+        .ghost-button,
+        .nav-cta {
+          width: 100%;
+        }
+
+        .pc-shell {
+          transform: scale(0.76);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a href="#top" class="brand" aria-label="BUILD//LAB home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>BUILD//LAB</span>
+        </a>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="nav-links" id="nav-menu">
+          <a href="#overview">Overview</a>
+          <a href="#capabilities">Capabilities</a>
+          <a href="#process">How It Works</a>
+        </div>
+
+        <div class="nav-actions">
+          <a class="nav-cta" href="#architect">Launch Architect</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" id="overview">
+        <div class="container hero-shell">
+          <div class="hero-copy">
+            <div class="eyebrow">AI-POWERED PC CONFIGURATION</div>
+            <h1>
+              BUILD YOUR NEXT<br />
+              <span class="highlight">OBSESSION.</span>
+            </h1>
+            <p>
+              From your first gaming rig to a high-performance workstation,
+              BUILD//LAB helps you design smarter PCs with AI-powered component
+              recommendations, compatibility guidance, and upgrade planning.
+            </p>
+            <div class="cta-row">
+              <a class="button" href="#architect">START BUILDING</a>
+              <a class="ghost-button" href="#capabilities">EXPLORE CAPABILITIES</a>
+            </div>
+            <div class="trust-line"><strong>Personalized recommendations.</strong> Hardware-focused guidance. No account required to explore.</div>
+          </div>
+
+          <div class="pc-visual" aria-label="Illustration of a premium gaming PC">
+            <div class="pc-shell" role="img" aria-label="Computer case visualization with GPU, cooling, airflow, and memory labels">
+              <div class="pc-body"></div>
+              <div class="gpu"></div>
+              <div class="motherboard"></div>
+              <div class="fan-row">
+                <div class="fan"></div>
+                <div class="fan"></div>
+                <div class="fan"></div>
+              </div>
+              <div class="ram-slot" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div class="pc-label label-gpu">GPU</div>
+              <div class="pc-label label-cooling">Cooling</div>
+              <div class="pc-label label-airflow">Airflow</div>
+              <div class="pc-label label-memory">Memory</div>
+              <div class="scan-line" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="capabilities" id="capabilities">
+        <div class="container">
+          <div class="section-heading">
+            <div class="eyebrow">Capabilities</div>
+            <h2>YOUR BUILD. OUR INTELLIGENCE.</h2>
+          </div>
+
+          <div class="feature-grid">
+            <article class="feature-card" tabindex="0">
+              <div class="feature-index"><span>01</span> / Custom PC Builds</div>
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+                  <path d="M8 7h8M8 11h8M8 15h6"></path>
+                </svg>
+              </div>
+              <h3>Custom PC Builds</h3>
+              <p>Describe your budget, workload, and performance goals. BUILD//LAB helps assemble a balanced component configuration tailored to your needs.</p>
+            </article>
+
+            <article class="feature-card" tabindex="0">
+              <div class="feature-index"><span>02</span> / Compatibility Guidance</div>
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3v18M3 12h18"></path>
+                  <circle cx="12" cy="12" r="8"></circle>
+                </svg>
+              </div>
+              <h3>Compatibility Guidance</h3>
+              <p>Identify potential conflicts involving CPU sockets, memory standards, cooling, power requirements, and physical clearances.</p>
+            </article>
+
+            <article class="feature-card" tabindex="0">
+              <div class="feature-index"><span>03</span> / Hardware Comparisons</div>
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 18L10 12L14 16L20 8"></path>
+                  <path d="M18 8h2v2"></path>
+                </svg>
+              </div>
+              <h3>Hardware Comparisons</h3>
+              <p>Understand the tradeoffs between processors, graphics cards, and other components without getting lost in technical jargon.</p>
+            </article>
+
+            <article class="feature-card" tabindex="0">
+              <div class="feature-index"><span>04</span> / Upgrade Planning</div>
+              <div class="feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 15l7-7 5 5 7-7"></path>
+                  <path d="M19 6h2v2"></path>
+                  <path d="M4 19h16"></path>
+                </svg>
+              </div>
+              <h3>Upgrade Planning</h3>
+              <p>Get guidance on which upgrades could improve your existing system and which components are worth keeping.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="workflow" id="process">
+        <div class="container">
+          <div class="section-heading">
+            <div class="eyebrow">Workflow</div>
+            <h2>FROM IDEA TO ARCHITECTURE.</h2>
+          </div>
+
+          <div class="workflow-grid">
+            <article class="step">
+              <div class="step-index">01</div>
+              <h3>Define</h3>
+              <p>Tell the AI your budget, how you use your PC, your target resolution, and your preferences.</p>
+            </article>
+
+            <article class="step">
+              <div class="step-index">02</div>
+              <h3>Design</h3>
+              <p>BUILD//LAB searches its hardware knowledge base and recommends a balanced configuration.</p>
+            </article>
+
+            <article class="step">
+              <div class="step-index">03</div>
+              <h3>Refine</h3>
+              <p>Review the proposed components, discuss compatibility, and adjust the build to suit your priorities.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="architect" id="architect">
+        <div class="container">
+          <div class="section-heading">
+            <div class="eyebrow">AI Architect</div>
+            <h2>MEET YOUR ARCHITECT.</h2>
+            <p>Your next build starts with a conversation.</p>
+          </div>
+
+          <div class="architect-wrap">
+            <aside class="architect-panel" aria-label="BUILD//LAB AI Architect details">
+              <div class="panel-head">
+                <div class="panel-badge">BUILD//LAB AI</div>
+              </div>
+              <h3>Hardware recommendations</h3>
+              <p>Design a custom machine that matches the way you game, create, and compute—without sacrificing balance or upgrade potential.</p>
+
+              <ul class="feature-list" aria-label="Platform capabilities">
+                <li>Compatibility checks for CPU, motherboard, memory, and power.</li>
+                <li>Upgrade guidance based on your current hardware and priorities.</li>
+                <li>Curated component knowledge for realistic, balanced recommendations.</li>
+              </ul>
+
+              <div class="catalog" aria-label="Hardware catalog categories">
+                <div class="catalog-item"><span>CPU</span><strong>01</strong></div>
+                <div class="catalog-item"><span>GPU</span><strong>02</strong></div>
+                <div class="catalog-item"><span>Motherboard</span><strong>03</strong></div>
+                <div class="catalog-item"><span>Memory</span><strong>04</strong></div>
+                <div class="catalog-item"><span>Storage</span><strong>05</strong></div>
+                <div class="catalog-item"><span>PSU</span><strong>06</strong></div>
+                <div class="catalog-item"><span>Cases</span><strong>07</strong></div>
+                <div class="catalog-item"><span>Cooling</span><strong>08</strong></div>
+              </div>
+
+              <div class="prompt-list" aria-label="Example prompts">
+                <button class="prompt-chip" type="button" data-copy="Build me a $1,500 gaming PC for 1440p.">
+                  <span class="mini-tag">Prompt</span>
+                  <span>Build me a $1,500 gaming PC for 1440p.</span>
+                </button>
+                <button class="prompt-chip" type="button" data-copy="Compare AMD and Intel processors for gaming.">
+                  <span class="mini-tag">Prompt</span>
+                  <span>Compare AMD and Intel processors for gaming.</span>
+                </button>
+                <button class="prompt-chip" type="button" data-copy="What should I upgrade in my current PC?">
+                  <span class="mini-tag">Prompt</span>
+                  <span>What should I upgrade in my current PC?</span>
+                </button>
+              </div>
+
+              <div class="copy-status" aria-live="polite"></div>
+            </aside>
+
+            <div class="chat-panel" aria-label="Botpress chatbot area">
+              <div class="chat-head">
+                <div class="chat-status">BUILD//LAB AI Architect</div>
+                <div class="chat-badges" aria-hidden="true">
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                </div>
+              </div>
+
+              <div id="bp-embedded-webchat" aria-label="BUILD//LAB Botpress chatbot panel"></div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="knowledge" id="knowledge">
+        <div class="container">
+          <div class="section-heading">
+            <div class="eyebrow">Hardware Knowledge</div>
+            <h2>ENGINEERED AROUND REAL HARDWARE.</h2>
+          </div>
+
+          <div class="knowledge-grid" aria-label="Curated hardware categories">
+            <article class="hardware-item">
+              <span class="mono">01</span>
+              <h4>CPUs</h4>
+              <p>Performance tiers, architecture tradeoffs, and workload fit.</p>
+            </article>
+            <article class="hardware-item">
+              <span class="mono">02</span>
+              <h4>GPUs</h4>
+              <p>Visual performance, VRAM, ray tracing, and generation comparisons.</p>
+            </article>
+            <article class="hardware-item">
+              <span class="mono">03</span>
+              <h4>Motherboards</h4>
+              <p>Socket support, form factors, expansion, and platform features.</p>
+            </article>
+            <article class="hardware-item">
+              <span class="mono">04</span>
+              <h4>Memory</h4>
+              <p>Capacity, speed, latency, and memory controller compatibility.</p>
+            </article>
+            <article class="hardware-item">
+              <span class="mono">05</span>
+              <h4>Storage</h4>
+              <p>NVMe, SATA, endurance, and throughput tradeoffs for real workloads.</p>
+            </article>
+            <article class="hardware-item">
+              <span class="mono">06</span>
+              <h4>Power Supplies</h4>
+              <p>Efficiency tiers, wattage headroom, and stable delivery.</p>
+            </article>
+            <article class="hardware-item">
+              <span class="mono">07</span>
+              <h4>Cases</h4>
+              <p>Airflow design, thermal performance, and physical clearance.</p>
+            </article>
+            <article class="hardware-item">
+              <span class="mono">08</span>
+              <h4>Cooling</h4>
+              <p>Airflow targets, radiator layouts, and thermal noise expectations.</p>
+            </article>
+          </div>
+
+          <p class="knowledge-disclaimer">
+            BUILD//LAB uses a curated hardware reference catalog. Prices are estimates rather than verified live retail listings. Confirm specifications, compatibility, and current pricing before purchasing components.
+          </p>
+        </div>
+      </section>
+
+      <section class="cta-band">
+        <div class="container">
+          <div class="cta-shell">
+            <div>
+              <div class="eyebrow">Launch</div>
+              <h2>THE PERFECT BUILD STARTS HERE.</h2>
+              <p>Skip the guesswork. Start designing your next machine.</p>
+            </div>
+            <a class="button" href="#architect">LAUNCH BUILD//LAB</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-shell">
+        <div>
+          <div class="footer-brand">
+            <span class="brand-mark" aria-hidden="true"></span>
+            <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--text); letter-spacing: -0.06em;">BUILD//LAB</span>
+          </div>
+          <p>AI-Powered Custom PC Architecture</p>
+        </div>
+
+        <div>
+          <h4>Navigation</h4>
+          <div class="footer-links">
+            <a href="#overview">Overview</a>
+            <a href="#capabilities">Capabilities</a>
+            <a href="#process">How It Works</a>
+            <a href="#architect">Launch Architect</a>
+          </div>
+        </div>
+
+        <div>
+          <h4>Project Note</h4>
+          <p class="note">Independent educational project.</p>
+          <p class="note">BUILD//LAB is not affiliated with hardware manufacturers or retailers.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Official Botpress Webchat scripts: keep exactly as published. -->
+    <script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+    <script src="https://files.bpcontent.cloud/2026/10/11/15/20261011154752-0D678U1D.js" defer></script>
+    <script>
+      window.addEventListener('load', function () {
+        if (window.botpressWebChat && typeof window.botpressWebChat.init === 'function') {
+          window.botpressWebChat.init({
+            botId: '07857745-72ef-44e9-b4a5-c1e0eeadae21',
+            clientId: 'a9b8c8a6-aad6-42f4-97d0-d11bf4f9c8c6',
+            hostUrl: 'https://cdn.botpress.cloud/webchat/v5.0',
+            messagingUrl: 'https://messaging.botpress.cloud',
+            containerId: 'bp-embedded-webchat',
+            showPoweredBy: false,
+            hideWidgetButton: true,
+            stylesheet: 'https://cdn.botpress.cloud/webchat/v5.0/webchat.css'
+          });
+        }
+      });
+
+      const nav = document.querySelector('.site-header nav');
+      const toggleButton = document.querySelector('.nav-toggle');
+
+      if (toggleButton) {
+        toggleButton.addEventListener('click', function () {
+          const isOpen = nav.classList.toggle('nav-open');
+          toggleButton.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        nav.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', function () {
+            nav.classList.remove('nav-open');
+            toggleButton.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+
+      document.querySelectorAll('.prompt-chip').forEach(function (button) {
+        button.addEventListener('click', function () {
+          const promptText = button.getAttribute('data-copy');
+          const status = document.querySelector('.copy-status');
+
+          if (navigator.clipboard && promptText) {
+            navigator.clipboard.writeText(promptText).then(function () {
+              if (status) status.textContent = 'Prompt copied to clipboard';
+            }).catch(function () {
+              if (status) status.textContent = 'Copy unavailable in this browser';
+            });
+          } else if (status) {
+            status.textContent = 'Use the prompt text as a template in Botpress';
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
